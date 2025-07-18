@@ -1,0 +1,2252 @@
+{
+	"info": {
+		"_postman_id": "5788f7c4-8747-4dc8-b6ea-48a46b01a5ef",
+		"name": "[TRANSACIONAL I][GATEWAY]",
+		"description": "Requests for pre-authorizations, authorizations, captures and cancellations of checkout and non-split transactions.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28887588"
+	},
+	"item": [
+		{
+			"name": "v2/generateToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Fixed ReferenceError by defining responseCode in the test script\r",
+							"if (pm.response.code === 200) {\r",
+							"    const token = pm.response.json().generatedToken;\r",
+							"    postman.setGlobalVariable(\"accesso\", 'Bearer ' + token);\r",
+							"}\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"//GERAR DOCUMENTOS \\/\r",
+							"\r",
+							"function gerarCPF() {\r",
+							"    // Tamanho do array e limite máximo do número gerado\r",
+							"    const total_array = 9;\r",
+							"    const n = 9;\r",
+							"\r",
+							"\r",
+							"    // Gera os primeiros 9 dígitos aleatórios\r",
+							"    const numeros = Array.from({ length: total_array }, () => Math.floor(Math.random() * (n + 1)));\r",
+							"\r",
+							"\r",
+							"    // Extrai os números para facilitar a leitura\r",
+							"    const [n1, n2, n3, n4, n5, n6, n7, n8, n9] = numeros;\r",
+							"\r",
+							"\r",
+							"    // Cálculo do primeiro dígito verificador\r",
+							"    let d1 = n9 * 2 + n8 * 3 + n7 * 4 + n6 * 5 + n5 * 6 + n4 * 7 + n3 * 8 + n2 * 9 + n1 * 10;\r",
+							"    d1 = 11 - (d1 % 11);\r",
+							"    if (d1 > 9) d1 = 0;\r",
+							"\r",
+							"\r",
+							"    // Cálculo do segundo dígito verificador\r",
+							"    let d2 = d1 * 2 + n9 * 3 + n8 * 4 + n7 * 5 + n6 * 6 + n5 * 7 + n4 * 8 + n3 * 9 + n2 * 10 + n1 * 11;\r",
+							"    d2 = 11 - (d2 % 11);\r",
+							"    if (d2 > 9) d2 = 0;\r",
+							"\r",
+							"\r",
+							"    // Formata o CPF com ou sem máscara\r",
+							"    const cpfSemMascara = `${n1}${n2}${n3}${n4}${n5}${n6}${n7}${n8}${n9}${d1}${d2}`\r",
+							"\r",
+							"\r",
+							"    // Retorna o CPF no formato desejado (você pode personalizar essa parte)\r",
+							"    return cpfSemMascara;\r",
+							"}\r",
+							"\r",
+							"\r",
+							"// Exemplo de uso para definir o valor de uma variável no Postman\r",
+							"pm.environment.set(\"cpf\", gerarCPF());\r",
+							"\r",
+							"\r",
+							"function gerarCNPJ() {\r",
+							"    // Tamanho do array e limite máximo do número gerado\r",
+							"    const total_array = 12;\r",
+							"    const n = 9;\r",
+							"\r",
+							"\r",
+							"    // Gera os primeiros 8 dígitos aleatórios, evitando repetições excessivas\r",
+							"    const numeros = Array.from({ length: total_array }, (i) => {\r",
+							"        if (i < 8) {\r",
+							"            return Math.floor(Math.random() * (n - 2) + 1) + (i % 2); // Evita números consecutivos iguais\r",
+							"        } else {\r",
+							"            return Math.floor(Math.random() * 10); // Gera um dígito aleatório para a matriz\r",
+							"        }\r",
+							"    });\r",
+							"\r",
+							"\r",
+							"    // Extrai os números para facilitar a leitura\r",
+							"    const [n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12] = numeros;\r",
+							"\r",
+							"\r",
+							"    // Cálculo do primeiro dígito verificador\r",
+							"    let d1 = n12 * 2 + n11 * 3 + n10 * 4 + n9 * 5 + n8 * 6 + n7 * 7 + n6 * 8 + n5 * 9 + n4 * 2 + n3 * 3 + n2 * 4 + n1 * 5;\r",
+							"    d1 = 11 - (d1 % 11);\r",
+							"    if (d1 > 9) d1 = 0;\r",
+							"\r",
+							"\r",
+							"    // Cálculo do segundo dígito verificador\r",
+							"    let d2 = d1 * 2 + n12 * 3 + n11 * 4 + n10 * 5 + n9 * 6 + n8 * 7 + n7 * 8 + n6 * 9 + n5 * 2 + n4 * 3 + n3 * 4 + n2 * 5 + n1 * 6;\r",
+							"    d2 = 11 - (d2 % 11);\r",
+							"    if (d2 > 9) d2 = 0;\r",
+							"\r",
+							"\r",
+							"    // Retorna o CNPJ sem máscara\r",
+							"    const cnpjSemMascara = `${n1}${n2}${n3}${n4}${n5}${n6}${n7}${n8}${n9}${n10}${n11}${n12}${d1}${d2}`;\r",
+							"    return cnpjSemMascara;\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-aditum-caller-origin-parent",
+						"value": "321",
+						"type": "text"
+					},
+					{
+						"key": "x-aditum-caller-origin",
+						"value": "321",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"merchantToken\": \"mk_v1LSFXZoEqBhYt2zAW6IQ\" //PP PAI\n    //\"merchantToken\": \"mk_A20VTTNhMk2FsUjMdpVKEg\" //MKTEC\n    //\"merchantToken\": \"mk_deEurFNhdkuvNWqL1iQzyQ\"\n    //\"merchantToken\": \"mk_7sOnN2zIrEaZC/sKSnuzYg\" //3ds\n    //\"merchantToken\": \"mk_d5uGzrKilUuIYy90czo5KQ\"\n    //\"merchantToken\": \"mk_gi73uA4rzEO2x5M/xA6MFA\" // clicktopay\n    //\"merchantToken\": \"mk_8SMx4Q2pn0qBi/fN4IN83A\"\n    //\"merchantToken\": \"mk_laVNDTjhD0yBANr8K5cXJQ\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{PortalURL}}/v2/Login/GenerateToken"
+			},
+			"response": []
+		},
+		{
+			"name": "preAuth [S.SPLIT, PARCEL, wooC]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"500\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 5,\r\n                \"installmentType\": \"merchant\"\r\n            }\r\n        ],\r\n        \"source\": \"woocommerce\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/preAuthorization"
+			},
+			"response": []
+		},
+		{
+			"name": "preAuth [S.SPLIT, À VISTA, wooC]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n\r\n            \"merchantChargeId\": \"{{$guid}}\",\r\n            \"customer\": {\r\n                \"name\": \"{{$randomFullName}}\",\r\n                \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n                \"document\": \"{{cpf}}\",\r\n                \"documentType\": 1,\r\n                \"phone\": {\r\n                    \"number\": \"999999999\",\r\n                    \"countryCode\": \"55\",\r\n                    \"areaCode\": \"21\",\r\n                    \"type\": 5\r\n                }\r\n            },\r\n            \"transactions\": [\r\n                {\r\n                    \"card\": {\r\n                        \"cardNumber\": \"5201328232183740\",\r\n                        \"cvv\": \"500\",\r\n                        \"brand\": 2,\r\n                        \"cardholderName\": \"{{$randomFullName}}\",\r\n                        \"cardholderDocument\": \"{{cpf}}\",\r\n                        \"billingAddress\": {\r\n                            \"street\": \"Quadra CSE 5\",\r\n                            \"number\": \"901\",\r\n                            \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                            \"city\": \"Brasília\",\r\n                            \"state\": \"DF\",\r\n                            \"country\": \"BR\",\r\n                            \"zipCode\": \"72025-055\"\r\n                        },\r\n                        \"expirationMonth\": 9,\r\n                        \"expirationYear\": 2029\r\n                    },\r\n                    \"amount\": 20000,\r\n                    \"installmentNumber\": 1,\r\n                    \"createdDate\": \"2024-11-28T16:33:25.053408091-03:00\",\r\n                    \"paymentType\": \"Credit\",\r\n                    \"acquirer\": \"PicPay\"\r\n                }\r\n            ],\r\n            \"source\": \"woocommerce\",\r\n            \"lateCapture\": false,\r\n            \"deviceInformation\": {\r\n                \"ip\": \"163.116.233.79\",\r\n                \"id\": \"\",\r\n                \"ipCountryCode\": \"BR\",\r\n                \"ipCity\": \"São Paulo\",\r\n                \"ipRegion\": \"São Paulo\",\r\n                \"sessionId\": \"\"\r\n            }\r\n        }\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/preAuthorization"
+			},
+			"response": []
+		},
+		{
+			"name": "preAuth [S.SPLIT, À VISTA, 8]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n            \"merchantChargeId\": \"{{$guid}}\",\r\n            \"customer\": {\r\n                \"name\": \"{{$randomFullName}}\",\r\n                \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n                \"document\": \"{{cpf}}\",\r\n                \"documentType\": 1,\r\n                \"phone\": {\r\n                    \"number\": \"999999999\",\r\n                    \"countryCode\": \"55\",\r\n                    \"areaCode\": \"21\",\r\n                    \"type\": 5\r\n                }\r\n            },\r\n            \"transactions\": [\r\n                {\r\n                    \"card\": {\r\n                        \"cardNumber\": \"5201328232183740\",\r\n                        \"cvv\": \"500\",\r\n                        \"brand\": 2,\r\n                        \"cardholderName\": \"{{$randomFullName}}\",\r\n                        \"cardholderDocument\": \"{{cpf}}\",\r\n                        \"billingAddress\": {\r\n                            \"street\": \"Quadra CSE 5\",\r\n                            \"number\": \"901\",\r\n                            \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                            \"city\": \"Brasília\",\r\n                            \"state\": \"DF\",\r\n                            \"country\": \"BR\",\r\n                            \"zipCode\": \"72025-055\"\r\n                        },\r\n                        \"expirationMonth\": 9,\r\n                        \"expirationYear\": 2029\r\n                    },\r\n                    \"amount\": 20000,\r\n                    \"installmentNumber\": 1,\r\n                    \"createdDate\": \"2024-11-28T16:33:25.053408091-03:00\",\r\n                    \"paymentType\": \"Credit\",\r\n                    \"acquirer\": \"PicPay\"\r\n                }\r\n            ],\r\n            \"source\": 8,\r\n            \"lateCapture\": false,\r\n            \"deviceInformation\": {\r\n                \"ip\": \"163.116.233.79\",\r\n                \"id\": \"\",\r\n                \"ipCountryCode\": \"BR\",\r\n                \"ipCity\": \"São Paulo\",\r\n                \"ipRegion\": \"São Paulo\",\r\n                \"sessionId\": \"\"\r\n            }\r\n        }\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/preAuthorization"
+			},
+			"response": []
+		},
+		{
+			"name": "preAuth [S.SPLIT, PARCEL, 8]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"122\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 5,\r\n                \"installmentType\": \"merchant\"\r\n            }\r\n        ],\r\n        \"source\": 8\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/preAuthorization"
+			},
+			"response": []
+		},
+		{
+			"name": "criação smartcheckout sem split com pix Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Stores the smartCheckoutId in an environment or global variable\r",
+							"var smartCheckoutId = pm.response.json().id;\r",
+							"pm.globals.set(\"smartCheckoutId\", smartCheckoutId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authority",
+						"value": "portal-dev.aditum.com.br"
+					},
+					{
+						"key": "accept",
+						"value": "application/json, text/plain, /"
+					},
+					{
+						"key": "accept-language",
+						"value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "origin",
+						"value": "https://dashboard-dev.aditum.com.br2"
+					},
+					{
+						"key": "referer",
+						"value": "https://dashboard-dev.aditum.com.br/"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"107\", \"Chromium\";v=\"107\", \"Not=A?Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Windows\""
+					},
+					{
+						"key": "sec-fetch-dest",
+						"value": "empty"
+					},
+					{
+						"key": "sec-fetch-mode",
+						"value": "cors"
+					},
+					{
+						"key": "sec-fetch-site",
+						"value": "same-site"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "01789121000127",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_pix}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_e2e}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "50905247000125",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000053974",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 20000,\n    \"customer\": {\n        \"name\": \"Teste QA\",\n        \"email\": \"teste@teste.com.br\",\n        \"document\": \"57915748513\",\n        \"documentType\": 1,\n        \"phone\": {\n            \"number\": \"988888888\",\n            \"countryCode\": \"55\",\n            \"areaCode\": \"22\",\n            \"type\": 5\n        }\n    },\n    \"description\": \"\",\n    \"emailNotification\": \"jorginho.felps@email.com.br\",\n    \"phoneNotification\": \"21999999999\",\n    \"paymentSupportedTypes\": [\n\n        \"2\",\n        \"8\",\n        \"9\"\n        \n    ],\n    \"shippingAddress\": {\n        \"street\": \"Rua Jarauara\",\n        \"number\": \"555\",\n        \"complement\": \"0\",\n        \"neighborhood\": \"Vila Ré\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"country\": \"Brasil\",\n        \"zipCode\": \"03665000\"\n    },\n    \"discount\": 0,\n    \"shippingAmount\": 0,\n    \"maxInstallmentNumber\": 12,\n    \"expiration\": \"2025-11-30 13:42:37Z\",\n    \"paymentLinkCodeOnIntegrator\": \"168875670164a861dd98f6a\",\n    \"threeDomainSecurePolicy\": 2,\n    \"lateCapture\": false,\n    \"limitDeniedCharges\": 10,\n    \"enableClickToPay\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/smartcheckout"
+			},
+			"response": []
+		},
+		{
+			"name": "preAuth [S.SPLIT, À VISTA, 10]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"smartCheckoutId\": \"{{smartCheckoutId}}\",\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"500\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 1,\r\n                \"installmentType\": \"none\"\r\n            }\r\n        ],\r\n        \"source\": 10\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GatewayURL}}/v2/charge/ecommerce/preAuthorization",
+					"host": [
+						"{{GatewayURL}}"
+					],
+					"path": [
+						"v2",
+						"charge",
+						"ecommerce",
+						"preAuthorization"
+					],
+					"query": [
+						{
+							"key": "merchantCredential",
+							"value": "88951985000181",
+							"disabled": true
+						},
+						{
+							"key": "Authorization",
+							"value": "$2a$12$uNTTRJSw59lz4/owB9rfueyjE.lYcVOF08hkHqZvtSJ3GCWMtsdUa",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "criação smartcheckout sem split com pix Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Stores the smartCheckoutId in an environment or global variable\r",
+							"var smartCheckoutId = pm.response.json().id;\r",
+							"pm.globals.set(\"smartCheckoutId\", smartCheckoutId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authority",
+						"value": "portal-dev.aditum.com.br"
+					},
+					{
+						"key": "accept",
+						"value": "application/json, text/plain, /"
+					},
+					{
+						"key": "accept-language",
+						"value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "origin",
+						"value": "https://dashboard-dev.aditum.com.br2"
+					},
+					{
+						"key": "referer",
+						"value": "https://dashboard-dev.aditum.com.br/"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"107\", \"Chromium\";v=\"107\", \"Not=A?Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Windows\""
+					},
+					{
+						"key": "sec-fetch-dest",
+						"value": "empty"
+					},
+					{
+						"key": "sec-fetch-mode",
+						"value": "cors"
+					},
+					{
+						"key": "sec-fetch-site",
+						"value": "same-site"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "01789121000127",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_pix}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_e2e}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "50905247000125",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000053974",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 20000,\n    \"customer\": {\n        \"name\": \"Teste QA\",\n        \"email\": \"teste@teste.com.br\",\n        \"document\": \"57915748513\",\n        \"documentType\": 1,\n        \"phone\": {\n            \"number\": \"988888888\",\n            \"countryCode\": \"55\",\n            \"areaCode\": \"22\",\n            \"type\": 5\n        }\n    },\n    \"description\": \"\",\n    \"emailNotification\": \"jorginho.felps@email.com.br\",\n    \"phoneNotification\": \"21999999999\",\n    \"paymentSupportedTypes\": [\n\n        \"2\",\n        \"8\",\n        \"9\"\n        \n    ],\n    \"shippingAddress\": {\n        \"street\": \"Rua Jarauara\",\n        \"number\": \"555\",\n        \"complement\": \"0\",\n        \"neighborhood\": \"Vila Ré\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"country\": \"Brasil\",\n        \"zipCode\": \"03665000\"\n    },\n    \"discount\": 0,\n    \"shippingAmount\": 0,\n    \"maxInstallmentNumber\": 12,\n    \"expiration\": \"2025-11-30 13:42:37Z\",\n    \"paymentLinkCodeOnIntegrator\": \"168875670164a861dd98f6a\",\n    \"threeDomainSecurePolicy\": 1,\n    \"lateCapture\": false,\n    \"limitDeniedCharges\": 10,\n    \"enableClickToPay\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/smartcheckout"
+			},
+			"response": []
+		},
+		{
+			"name": "preAuth [S.SPLIT, PARCEL, 10]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"smartCheckoutId\": \"{{smartCheckoutId}}\",\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"721\",\r\n                    \"brand\": 4,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 5,\r\n                \"installmentType\": \"merchant\"\r\n            }\r\n        ],\r\n        \"source\": 10\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{GatewayURL}}/v2/charge/ecommerce/preAuthorization",
+					"host": [
+						"{{GatewayURL}}"
+					],
+					"path": [
+						"v2",
+						"charge",
+						"ecommerce",
+						"preAuthorization"
+					],
+					"query": [
+						{
+							"key": "merchantCredential",
+							"value": "88951985000181",
+							"disabled": true
+						},
+						{
+							"key": "Authorization",
+							"value": "$2a$12$uNTTRJSw59lz4/owB9rfueyjE.lYcVOF08hkHqZvtSJ3GCWMtsdUa",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth [S.SPLIT, PARCEL, wooC]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"721\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 5,\r\n                \"installmentType\": \"merchant\"\r\n            }\r\n        ],\r\n        \"source\": \"woocommerce\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/Authorization"
+			},
+			"response": []
+		},
+		{
+			"name": "Auth [S.SPLIT, À VISTA, wooC]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n\r\n            \"merchantChargeId\": \"{{$guid}}\",\r\n            \"customer\": {\r\n                \"name\": \"{{$randomFullName}}\",\r\n                \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n                \"document\": \"{{cpf}}\",\r\n                \"documentType\": 1,\r\n                \"phone\": {\r\n                    \"number\": \"999999999\",\r\n                    \"countryCode\": \"55\",\r\n                    \"areaCode\": \"21\",\r\n                    \"type\": 5\r\n                }\r\n            },\r\n            \"transactions\": [\r\n                {\r\n                    \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"500\",\r\n                    \"brand\": 2,\r\n                        \"cardholderName\": \"{{$randomFullName}}\",\r\n                        \"cardholderDocument\": \"{{cpf}}\",\r\n                        \"billingAddress\": {\r\n                            \"street\": \"Quadra CSE 5\",\r\n                            \"number\": \"901\",\r\n                            \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                            \"city\": \"Brasília\",\r\n                            \"state\": \"DF\",\r\n                            \"country\": \"BR\",\r\n                            \"zipCode\": \"72025-055\"\r\n                        },\r\n                        \"expirationMonth\": 9,\r\n                        \"expirationYear\": 2029\r\n                    },\r\n                    \"amount\": 20000,\r\n                    \"installmentNumber\": 1,\r\n                    \"createdDate\": \"2024-11-28T16:33:25.053408091-03:00\",\r\n                    \"paymentType\": \"Credit\",\r\n                    \"acquirer\": \"PicPay\"\r\n                }\r\n            ],\r\n            \"source\": \"woocommerce\",\r\n            \"lateCapture\": false,\r\n            \"deviceInformation\": {\r\n                \"ip\": \"163.116.233.79\",\r\n                \"id\": \"\",\r\n                \"ipCountryCode\": \"BR\",\r\n                \"ipCity\": \"São Paulo\",\r\n                \"ipRegion\": \"São Paulo\",\r\n                \"sessionId\": \"\"\r\n            }\r\n        }\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/Authorization"
+			},
+			"response": []
+		},
+		{
+			"name": "Auth [S.SPLIT, À VISTA, 8]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"500\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 1,\r\n                \"paymentType\": \"Credit\",\r\n                \"acquirer\": \"PicPay\"\r\n            }\r\n        ],\r\n        \"source\": 8,\r\n        \"lateCapture\": false\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/Authorization"
+			},
+			"response": []
+		},
+		{
+			"name": "Auth [S.SPLIT, PARCEL, 8]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"SubAcquirer\": {\r\n            \"PaymentFacilitatorId\": \"7778D989A5355\"\r\n        },\r\n        \"SubMerchant\": {\r\n            \"merchantCode\": \"000000000042004\",\r\n            \"id\": \"ID123\",\r\n            \"name\": \"fulando S.A\",\r\n            \"Document\": \"00945667000167\",\r\n            \"Address\": {\r\n                \"Street\": \"rua\",\r\n                \"Number\": \"131\",\r\n                \"Neighborhood\": \"bairro\",\r\n                \"City\": \"cidade\",\r\n                \"State\": \"RR\",\r\n                \"Country\": \"país\",\r\n                \"ZipCode\": \"02068000\",\r\n                \"Complement\": \"1\"\r\n            }\r\n        },\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"721\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 5,\r\n                \"installmentType\": \"merchant\"\r\n            }\r\n        ],\r\n        \"source\": 8\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/Authorization"
+			},
+			"response": []
+		},
+		{
+			"name": "criação smartcheckout sem split com pix Copy 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Stores the smartCheckoutId in an environment or global variable\r",
+							"var smartCheckoutId = pm.response.json().id;\r",
+							"pm.globals.set(\"smartCheckoutId\", smartCheckoutId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json, text/plain, /"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "01789121000127",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_pix}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_e2e}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "50905247000125",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000053974",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 20000,\n    \"customer\": {\n        \"name\": \"Teste QA\",\n        \"email\": \"teste@teste.com.br\",\n        \"document\": \"57915748513\",\n        \"documentType\": 1,\n        \"phone\": {\n            \"number\": \"988888888\",\n            \"countryCode\": \"55\",\n            \"areaCode\": \"22\",\n            \"type\": 5\n        }\n    },\n    \"description\": \"\",\n    \"emailNotification\": \"jorginho.felps@email.com.br\",\n    \"phoneNotification\": \"21999999999\",\n    \"paymentSupportedTypes\": [\n\n        \"2\",\n        \"8\",\n        \"9\"\n        \n    ],\n    \"shippingAddress\": {\n        \"street\": \"Rua Jarauara\",\n        \"number\": \"555\",\n        \"complement\": \"0\",\n        \"neighborhood\": \"Vila Ré\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"country\": \"Brasil\",\n        \"zipCode\": \"03665000\"\n    },\n    \"discount\": 0,\n    \"shippingAmount\": 0,\n    \"maxInstallmentNumber\": 12,\n    \"expiration\": \"2025-11-30 13:42:37Z\",\n    \"paymentLinkCodeOnIntegrator\": \"168875670164a861dd98f6a\",\n    \"threeDomainSecurePolicy\": 1,\n    \"lateCapture\": false,\n    \"limitDeniedCharges\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/smartcheckout"
+			},
+			"response": []
+		},
+		{
+			"name": "Auth [S.SPLIT, À VISTA, 10]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n            /*    \"SubAcquirer\": {\r\n            \"PaymentFacilitatorId\": \"7778D989A5355\"\r\n        },\r\n        \"SubMerchant\": {\r\n            \"merchantCode\": \"000000000042004\",\r\n            \"id\": \"ID123\",\r\n            \"name\": \"fulando S.A\",\r\n            \"Document\": \"00945667000167\",\r\n            \"Address\": {\r\n                \"Street\": \"rua\",\r\n                \"Number\": \"131\",\r\n                \"Neighborhood\": \"bairo\",\r\n                \"City\": \"cidade\",\r\n                \"State\": \"RR\",\r\n                \"Country\": \"país\",\r\n                \"ZipCode\": \"02068000\",\r\n                \"Complement\": \"1\"\r\n            }\r\n        },*/\r\n        \"smartCheckoutId\": \"{{smartCheckoutId}}\",\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"500\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 1,\r\n                \"installmentType\": \"none\"\r\n            }\r\n        ],\r\n        \"source\": 10\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/Authorization"
+			},
+			"response": []
+		},
+		{
+			"name": "criação smartcheckout sem split com pix Copy 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Stores the smartCheckoutId in an environment or global variable\r",
+							"var smartCheckoutId = pm.response.json().id;\r",
+							"pm.globals.set(\"smartCheckoutId\", smartCheckoutId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "authority",
+						"value": "portal-dev.aditum.com.br"
+					},
+					{
+						"key": "accept",
+						"value": "application/json, text/plain, /"
+					},
+					{
+						"key": "accept-language",
+						"value": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7"
+					},
+					{
+						"key": "content-type",
+						"value": "application/json"
+					},
+					{
+						"key": "origin",
+						"value": "https://dashboard-dev.aditum.com.br2"
+					},
+					{
+						"key": "referer",
+						"value": "https://dashboard-dev.aditum.com.br/"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"107\", \"Chromium\";v=\"107\", \"Not=A?Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Windows\""
+					},
+					{
+						"key": "sec-fetch-dest",
+						"value": "empty"
+					},
+					{
+						"key": "sec-fetch-mode",
+						"value": "cors"
+					},
+					{
+						"key": "sec-fetch-site",
+						"value": "same-site"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "01789121000127",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_pix}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "{{mcode_e2e}}",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "50905247000125",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000053974",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 20000,\n    \"customer\": {\n        \"name\": \"Teste QA\",\n        \"email\": \"teste@teste.com.br\",\n        \"document\": \"57915748513\",\n        \"documentType\": 1,\n        \"phone\": {\n            \"number\": \"988888888\",\n            \"countryCode\": \"55\",\n            \"areaCode\": \"22\",\n            \"type\": 5\n        }\n    },\n    \"description\": \"\",\n    \"emailNotification\": \"jorginho.felps@email.com.br\",\n    \"phoneNotification\": \"21999999999\",\n    \"paymentSupportedTypes\": [\n\n        \"2\",\n        \"8\",\n        \"9\"\n        \n    ],\n    \"shippingAddress\": {\n        \"street\": \"Rua Jarauara\",\n        \"number\": \"555\",\n        \"complement\": \"0\",\n        \"neighborhood\": \"Vila Ré\",\n        \"city\": \"São Paulo\",\n        \"state\": \"SP\",\n        \"country\": \"Brasil\",\n        \"zipCode\": \"03665000\"\n    },\n    \"discount\": 0,\n    \"shippingAmount\": 0,\n    \"maxInstallmentNumber\": 12,\n    \"expiration\": \"2025-11-30 13:42:37Z\",\n    \"paymentLinkCodeOnIntegrator\": \"168875670164a861dd98f6a\",\n    \"threeDomainSecurePolicy\": 1,\n    \"lateCapture\": false,\n    \"enableClickToPay\": false,\n    \"limitDeniedCharges\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/smartcheckout"
+			},
+			"response": []
+		},
+		{
+			"name": "Auth [S.SPLIT, PARCEL, 10]",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// --- Script de Teste V2 - Com Etiquetas Dinâmicas ---",
+							"",
+							"// Verificamos o status primeiro",
+							"pm.test(\"O Status da Resposta é 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Apenas continue se o status for 200",
+							"if (pm.response.code === 200) {",
+							"",
+							"    // Extração de dados",
+							"    const responseBody = pm.response.json();",
+							"    const requestName = pm.request.name;",
+							"    const merchantChargeId = responseBody.charge?.merchantChargeId || \"N/A\";",
+							"    const chargeId = responseBody.id || responseBody.charge?.id || \"N/A\";",
+							"",
+							"    // ✨ A MÁGICA ACONTECE AQUI! ✨",
+							"    // Criamos um teste dinâmico para exibir os IDs.",
+							"    pm.test(`IDs Capturados | ChargeID: ${chargeId}`, function() {",
+							"        // Este teste não precisa de uma asserção, seu propósito é apenas exibir o nome.",
+							"        // Mas podemos adicionar uma verificação simples para ele \"contar\" como um teste passado.",
+							"        pm.expect(chargeId).to.not.equal(\"N/A\", \"O ChargeID não deveria ser N/A\");",
+							"    });",
+							"",
+							"    pm.test(`MerchantID Capturado: ${merchantChargeId}`, function() {",
+							"        pm.expect(merchantChargeId).to.not.equal(\"N/A\", \"O MerchantChargeID não deveria ser N/A\");",
+							"    });",
+							"    ",
+							"    // --- Lógica do Relatório Customizado (nosso caderno de anotações) ---",
+							"    let reportData = [];",
+							"    const reportRaw = pm.globals.get(\"executionReport\");",
+							"    if (reportRaw) {",
+							"        try {",
+							"            reportData = JSON.parse(reportRaw);",
+							"        } catch (e) {",
+							"            console.error(\"Não foi possível parsear o relatório. Reiniciando.\", e);",
+							"        }",
+							"    }",
+							"",
+							"    reportData.push({",
+							"        \"Descrição da Transação\": requestName,",
+							"        \"Merchant Charge ID\": merchantChargeId,",
+							"        \"Charge ID\": chargeId",
+							"    });",
+							"    ",
+							"    pm.globals.set(\"executionReport\", JSON.stringify(reportData));",
+							"    console.log(`Anotação de relatório adicionada para: ${requestName}`);",
+							"",
+							"} else {",
+							"    // Tratamento de erro",
+							"    pm.test(`A requisição falhou com status ${pm.response.code}`, function() {",
+							"        pm.expect.fail(`Status esperado 200, mas recebido ${pm.response.code}`);",
+							"    });",
+							"    console.warn(`Extração de dados para '${pm.request.name}' pulada devido a status de erro: ${pm.response.code}`);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{accesso}}"
+					},
+					{
+						"key": "x-aditum-merchantCode",
+						"value": "000000000042004",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantDocument",
+						"value": "00945667000167",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{access_token}}",
+						"disabled": true
+					},
+					{
+						"key": "x-aditum-merchantcode",
+						"value": "000000000053974"
+					},
+					{
+						"key": "x-aditum-merchantdocument",
+						"value": "50905247000125",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"charge\": {\r\n        \"smartCheckoutId\": \"{{smartCheckoutId}}\",\r\n        \"merchantChargeId\": \"{{$guid}}\",\r\n        \"customer\": {\r\n            \"name\": \"{{$randomFullName}}\",\r\n            \"email\": \"{{$randomUserName}}@teste.com.br\",\r\n            \"document\": \"{{cpf}}\",\r\n            \"documentType\": 1,\r\n            \"phone\": {\r\n                \"number\": \"999999999\",\r\n                \"countryCode\": \"55\",\r\n                \"areaCode\": \"21\",\r\n                \"type\": 5\r\n            }\r\n        },\r\n        \"receivers\": [],\r\n        \"transactions\": [\r\n            {\r\n                \"card\": {\r\n                    \"cardNumber\": \"5201328232183740\",\r\n                    \"cvv\": \"500\",\r\n                    \"brand\": 2,\r\n                    \"cardholderName\": \"{{$randomFullName}}\",\r\n                    \"cardholderDocument\": \"{{cpf}}\",\r\n                    \"billingAddress\": {\r\n                        \"street\": \"Quadra CSE 5\",\r\n                        \"number\": \"901\",\r\n                        \"neighborhood\": \"Taguatinga Sul (Taguatinga)\",\r\n                        \"city\": \"Brasília\",\r\n                        \"state\": \"DF\",\r\n                        \"country\": \"BR\",\r\n                        \"zipCode\": \"72025-055\"\r\n                    },\r\n                    \"expirationMonth\": 9,\r\n                    \"expirationYear\": 2029\r\n                },\r\n                \"paymentType\": 2,\r\n                \"amount\": 20000,\r\n                \"installmentNumber\": 5,\r\n                \"installmentType\": \"merchant\"\r\n              //  \"softDescriptor\": \"testando\"\r\n            }\r\n        ],\r\n        \"source\": 10\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{GatewayURL}}/v2/charge/ecommerce/Authorization"
+			},
+			"response": []
+		},
+		{
+			"name": "[Relatório Final] Exibir Dossiê",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Script para a requisição [Relatório Final] Exibir Dossiê\r",
+							"\r",
+							"const reportData = JSON.parse(pm.globals.get(\"executionReport\"));\r",
+							"\r",
+							"// Template HTML para o nosso relatório. Usamos a sintaxe do Handlebars.\r",
+							"const template = `\r",
+							"    <style type=\"text/css\">\r",
+							"        body { font-family: sans-serif; }\r",
+							"        table { border-collapse: collapse; width: 100%; }\r",
+							"        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\r",
+							"        th { background-color: #f2f2f2; }\r",
+							"        tr:nth-child(even){ background-color: #f9f9f9; }\r",
+							"    </style>\r",
+							"    <h1>Dossiê Final das Transações</h1>\r",
+							"    <table>\r",
+							"        <tr>\r",
+							"            <th>Descrição da Transação</th>\r",
+							"            <th>Merchant Charge ID</th>\r",
+							"            <th>Charge ID</th>\r",
+							"        </tr>\r",
+							"        {{#each report}}\r",
+							"        <tr>\r",
+							"            <td>{{this[\"Descrição da Transação\"]}}</td>\r",
+							"            <td>{{this[\"Merchant Charge ID\"]}}</td>\r",
+							"            <td>{{this[\"Charge ID\"]}}</td>\r",
+							"        </tr>\r",
+							"        {{/each}}\r",
+							"    </table>\r",
+							"`;\r",
+							"\r",
+							"// pm.visualizer.set é o comando que renderiza o HTML na aba \"Visualize\" do Postman\r",
+							"// e no relatório htmlextra do Newman.\r",
+							"pm.visualizer.set(template, { report: reportData });"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "MerchantToken",
+						"value": "mk_TVU8u5WyBIIE9NuDTAPT2e",
+						"type": "text"
+					}
+				],
+				"url": "{{PortalURL}}/v1/Login/GenerateToken"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"console.log(\"Inicializando o caderno de relatório de execução...\");\r",
+					"pm.globals.set(\"executionReport\", JSON.stringify([]));"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
