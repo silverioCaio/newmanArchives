@@ -36,7 +36,7 @@ if not exist "%PASTA_RELATORIO_ATUAL%\index.html" (
 REM --- PASSO 2: Atualização do Índice de Relatórios ---
 echo Atualizando o arquivo de indice: %ARQUIVO_INDICE%
 (
-    echo ^<a href="./%TIMESTAMP%/index.html"^>Relatorio de %TIMESTAMP%^</a^>^<br^>
+    echo ^<a href="./newman/%TIMESTAMP%/index.html"^>Relatorio de %TIMESTAMP%^</a^>^<br^>
 ) >> "%ARQUIVO_INDICE%"
 
 echo.
